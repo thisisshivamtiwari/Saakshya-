@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660" role="img" aria-labelledby="t d">
+<title id="t">Saakshya investigation pipeline</title>
+<desc id="d">Twelve stages from a normalised Indian phone number to an evidence-backed report: normalise, telecom intelligence, exact search, documents, social, business, registries, classifieds, page fetch, lead expansion, entity resolution, scoring and report.</desc>
+<style>
+    svg{--bg:#12151C;--panel:#1A1F2A;--ink:#EEF1F6;--muted:#9AA5B8;--line:#313A4B;--accent:#FB923C;--accent-soft:#3A2516;--teal:#5EEAD4;--teal-soft:#12332F;--warn:#FDA4AF;--warn-soft:#3B1620;--node:#1F2532;--node-hover:#2A2118;}
+    text{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;fill:var(--ink)}
+    .bg{fill:var(--bg)} .panel{fill:var(--panel);stroke:var(--line)}
+    .title{font-size:34px;font-weight:700;letter-spacing:-0.5px}
+    .deva{font-size:20px;fill:var(--accent);font-weight:600}
+    .tag{font-size:15px;fill:var(--muted)}
+    .rail{fill:none;stroke:var(--line);stroke-width:3}
+    .flow{fill:none;stroke:var(--accent);stroke-width:3;stroke-linecap:round;stroke-dasharray:2 16;
+          animation:flow 1.6s linear infinite}
+    @keyframes flow{to{stroke-dashoffset:-36}}
+    .pulse{fill:var(--accent)}
+    .node rect.box{fill:var(--node);stroke:var(--line);stroke-width:1.5;transition:all .15s}
+    .node{cursor:pointer;outline:none}
+    .node:hover rect.box,.node:focus rect.box{fill:var(--node-hover);stroke:var(--accent);stroke-width:2.5}
+    .num{font-size:11px;font-weight:700;fill:var(--accent)}
+    .label{font-size:15px;font-weight:650}
+    .sub{font-size:11.5px;fill:var(--muted)}
+    .tip{opacity:0;pointer-events:none;transition:opacity .15s}
+    .node:hover .tip,.node:focus .tip{opacity:1}
+    svg:has(.node:hover) .hint,svg:has(.node:focus) .hint{opacity:0}
+    .hint{transition:opacity .15s}
+    .tip-title{font-size:18px;font-weight:700;fill:var(--accent)}
+    .tip-line{font-size:14.5px;fill:var(--ink)}
+    .hint-title{font-size:18px;font-weight:700}
+    .hint-line{font-size:14.5px;fill:var(--muted)}
+    .chip rect{stroke-width:1.2} .chip text{font-size:12.5px;font-weight:600}
+    .c-teal rect{fill:var(--teal-soft);stroke:var(--teal)} .c-teal text{fill:var(--teal)}
+    .c-acc rect{fill:var(--accent-soft);stroke:var(--accent)} .c-acc text{fill:var(--accent)}
+    .c-warn rect{fill:var(--warn-soft);stroke:var(--warn)} .c-warn text{fill:var(--warn)}
+    .cap{font-size:12px;font-weight:700;letter-spacing:1.2px;fill:var(--muted)}
+    .switch rect{fill:var(--panel);stroke:var(--line)} .switch text{font-size:12.5px;font-weight:600;fill:var(--muted)}
+    .switch a:hover text{fill:var(--accent)}
+    .phone{font-size:15px;font-weight:700;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;fill:var(--accent)}
+    @media (prefers-reduced-motion: reduce){.flow{animation:none} .pulse{display:none}}
+    </style>
+<rect class="bg" width="1200" height="660" rx="18"/>
+<text class="title" x="41" y="58">Saakshya <tspan class="deva" dx="6">साक्ष्य · evidence</tspan></text>
+<text class="tag" x="41" y="86">One Indian phone number in. Every public association out, each with its source, its date and its doubt.</text>
+<text class="phone" x="1159" y="86" text-anchor="end">+91 98765 43210</text>
+<path class="rail" d="M 51 164 H 1149 C 1178 164, 1178 284, 1149 284 H 51"/><path class="flow" d="M 51 164 H 1149 C 1178 164, 1178 284, 1149 284 H 51"/>
+<circle class="pulse" r="6"><animateMotion dur="9s" repeatCount="indefinite" path="M 51 164 H 1149 C 1178 164, 1178 284, 1149 284 H 51"/></circle>
+<rect class="panel" x="41" y="352" width="1118" height="118" rx="14"/>
+<g class="hint"><text class="hint-title" x="65" y="390">What happens at each stage?</text><text class="hint-line" x="65" y="418">Open this SVG on its own and hover or tab through the twelve stages. Nothing here is a black box:</text><text class="hint-line" x="65" y="442">every finding keeps its URL, excerpt, date, source grade and the reason it was linked.</text></g>
+<g class="node" tabindex="0"><rect class="box" x="41" y="132" width="168" height="64" rx="12"/><text class="num" x="55" y="152">01</text><text class="label" x="55" y="171">Normalise</text><text class="sub" x="55" y="187">any Indian format</text><g class="tip"><text class="tip-title" x="65" y="390">1 · Normalise the number</text><text class="tip-line" x="65" y="418">Accepts +91 98765 43210, 09876543210, (98)76543210 and more, validates with libphonenumber,</text><text class="tip-line" x="65" y="442">classifies mobile / landline / toll-free / 140-series, and generates the search variants.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="231" y="132" width="168" height="64" rx="12"/><text class="num" x="245" y="152">02</text><text class="label" x="245" y="171">Telecom intel</text><text class="sub" x="245" y="187">numbering facts only</text><g class="tip"><text class="tip-title" x="65" y="390">2 · Telecom intelligence</text><text class="tip-line" x="65" y="418">Country, type, formats, time zone and the ORIGINAL allocation, always labelled as such:</text><text class="tip-line" x="65" y="442">number portability means a prefix never proves the current carrier, region or person.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="421" y="132" width="168" height="64" rx="12"/><text class="num" x="435" y="152">03</text><text class="label" x="435" y="171">Exact search</text><text class="sub" x="435" y="187">quoted variants</text><g class="tip"><text class="tip-title" x="65" y="390">3 · Exact-match discovery</text><text class="tip-line" x="65" y="418">Runs quoted variants through documented search APIs (Brave, SerpAPI, Serper, Tavily).</text><text class="tip-line" x="65" y="442">Each query is scored by information gain; branches that repeat known URLs are stopped.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="611" y="132" width="168" height="64" rx="12"/><text class="num" x="625" y="152">04</text><text class="label" x="625" y="171">Documents</text><text class="sub" x="625" y="187">pdf · xls · doc</text><g class="tip"><text class="tip-title" x="65" y="390">4 · Public documents</text><text class="tip-line" x="65" y="418">filetype: queries surface tenders, brochures, notices and directories. Files are fetched within</text><text class="tip-line" x="65" y="442">robots.txt, size and type limits, then parsed in-process for names, e-mails and dates.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="801" y="132" width="168" height="64" rx="12"/><text class="num" x="815" y="152">05</text><text class="label" x="815" y="171">Social</text><text class="sub" x="815" y="187">public pages only</text><g class="tip"><text class="tip-title" x="65" y="390">5 · Social and profile references</text><text class="tip-line" x="65" y="418">site: queries find public pages that display the number. Wording stays honest:</text><text class="tip-line" x="65" y="442">&quot;the number appears on a page associated with username X&quot;, never &quot;belongs to&quot;.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="991" y="132" width="168" height="64" rx="12"/><text class="num" x="1005" y="152">06</text><text class="label" x="1005" y="171">Business</text><text class="sub" x="1005" y="187">listings and sites</text><g class="tip"><text class="tip-title" x="65" y="390">6 · Business discovery</text><text class="tip-line" x="65" y="418">Directories, company sites and place listings: business name, stated owner, address,</text><text class="tip-line" x="65" y="442">website, e-mail and any other number publicly listed on the same page.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="991" y="252" width="168" height="64" rx="12"/><text class="num" x="1005" y="272">07</text><text class="label" x="1005" y="291">Registries</text><text class="sub" x="1005" y="307">courts · tenders</text><g class="tip"><text class="tip-title" x="65" y="390">7 · Public registries</text><text class="tip-line" x="65" y="418">Government, court, tender and company-record pages reached through search and</text><text class="tip-line" x="65" y="442">documented APIs only. No form submission, no CAPTCHA solving, no logins.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="801" y="252" width="168" height="64" rx="12"/><text class="num" x="815" y="272">08</text><text class="label" x="815" y="291">Classifieds</text><text class="sub" x="815" y="307">listings over time</text><g class="tip"><text class="tip-title" x="65" y="390">8 · Classifieds and marketplaces</text><text class="tip-line" x="65" y="418">Old adverts are often the only trace of a previous holder of a number.</text><text class="tip-line" x="65" y="442">Title, seller, category, place and date are recorded. Sellers are never contacted.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="611" y="252" width="168" height="64" rx="12"/><text class="num" x="625" y="272">09</text><text class="label" x="625" y="291">Page fetch</text><text class="sub" x="625" y="307">robots.txt aware</text><g class="tip"><text class="tip-title" x="65" y="390">9 · Full-text evidence</text><text class="tip-line" x="65" y="418">The most promising surfaced pages are fetched (never crawled) so every finding carries</text><text class="tip-line" x="65" y="442">our own excerpt, a content hash and a retrieval time that an investigator can re-verify.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="421" y="252" width="168" height="64" rx="12"/><text class="num" x="435" y="272">10</text><text class="label" x="435" y="291">Lead expansion</text><text class="sub" x="435" y="307">bounded recursion</text><g class="tip"><text class="tip-title" x="65" y="390">10 · Follow the leads</text><text class="tip-line" x="65" y="418">Names, e-mails, usernames, businesses and domains become ranked leads. Only the relevant</text><text class="tip-line" x="65" y="442">ones are searched, and expansion stops when new information dries up.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="231" y="252" width="168" height="64" rx="12"/><text class="num" x="245" y="272">11</text><text class="label" x="245" y="291">Entity resolution</text><text class="sub" x="245" y="307">never merge blindly</text><g class="tip"><text class="tip-title" x="65" y="390">11 · Resolve entities, keep contradictions</text><text class="tip-line" x="65" y="418">Sources merge only on strong keys (e-mail, username, website) or matching names.</text><text class="tip-line" x="65" y="442">Two different names stay two candidates, with the conflict written down.</text></g></g>
+<g class="node" tabindex="0"><rect class="box" x="41" y="252" width="168" height="64" rx="12"/><text class="num" x="55" y="272">12</text><text class="label" x="55" y="291">Score and report</text><text class="sub" x="55" y="307">show your working</text><g class="tip"><text class="tip-title" x="65" y="390">12 · Transparent scoring and reports</text><text class="tip-line" x="65" y="418">A visible point ledger (+40 exact match, -30 conflicting name ...) explains every score.</text><text class="tip-line" x="65" y="442">Output: HTML, Markdown, JSON, CSV, a timeline and an evidence graph.</text></g></g>
+<text class="cap" x="41" y="500">EVERY CLAIM IS GRADED</text>
+<g class="chip c-teal"><rect x="41" y="512" width="70" height="28" rx="14"/><text x="76" y="530.5" text-anchor="middle">DIRECT</text></g>
+<g class="chip c-teal"><rect x="121" y="512" width="85" height="28" rx="14"/><text x="164" y="530.5" text-anchor="middle">INDIRECT</text></g>
+<g class="chip c-teal"><rect x="216" y="512" width="85" height="28" rx="14"/><text x="258" y="530.5" text-anchor="middle">INFERRED</text></g>
+<g class="chip c-acc"><rect x="311" y="512" width="55" height="28" rx="14"/><text x="338" y="530.5" text-anchor="middle">FACT</text></g>
+<g class="chip c-acc"><rect x="376" y="512" width="114" height="28" rx="14"/><text x="433" y="530.5" text-anchor="middle">STRONG MATCH</text></g>
+<g class="chip c-acc"><rect x="500" y="512" width="85" height="28" rx="14"/><text x="542" y="530.5" text-anchor="middle">POSSIBLE</text></g>
+<g class="chip c-acc"><rect x="595" y="512" width="55" height="28" rx="14"/><text x="622" y="530.5" text-anchor="middle">WEAK</text></g>
+<g class="chip c-acc"><rect x="660" y="512" width="100" height="28" rx="14"/><text x="710" y="530.5" text-anchor="middle">UNVERIFIED</text></g>
+<g class="chip c-acc"><rect x="770" y="512" width="122" height="28" rx="14"/><text x="831" y="530.5" text-anchor="middle">CONTRADICTORY</text></g>
+<g class="chip c-teal"><rect x="902" y="512" width="166" height="28" rx="14"/><text x="985" y="530.5" text-anchor="middle">Source grade A to E</text></g>
+<text class="cap" x="41" y="578">NEVER, BY DESIGN</text>
+<g class="chip c-warn"><rect x="41" y="590" width="129" height="28" rx="14"/><text x="106" y="608.5" text-anchor="middle">no breach data</text></g>
+<g class="chip c-warn"><rect x="180" y="590" width="92" height="28" rx="14"/><text x="226" y="608.5" text-anchor="middle">no logins</text></g>
+<g class="chip c-warn"><rect x="282" y="590" width="137" height="28" rx="14"/><text x="350" y="608.5" text-anchor="middle">no private APIs</text></g>
+<g class="chip c-warn"><rect x="429" y="590" width="122" height="28" rx="14"/><text x="490" y="608.5" text-anchor="middle">no OTP probes</text></g>
+<g class="chip c-warn"><rect x="561" y="590" width="159" height="28" rx="14"/><text x="640" y="608.5" text-anchor="middle">no subscriber data</text></g>
+<g class="chip c-warn"><rect x="730" y="590" width="107" height="28" rx="14"/><text x="784" y="608.5" text-anchor="middle">no tracking</text></g>
+<g class="chip c-warn"><rect x="847" y="590" width="159" height="28" rx="14"/><text x="926" y="608.5" text-anchor="middle">no guessed numbers</text></g>
+<g class="chip c-warn"><rect x="1016" y="590" width="107" height="28" rx="14"/><text x="1070" y="608.5" text-anchor="middle">no scraping</text></g>
+</svg>

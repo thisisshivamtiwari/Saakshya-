@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Public-source report {{ phone.e164 }} - {{ meta.investigation_id }}</title>
+<style>
+  :root { --ink:#1b1b1b; --muted:#5f6368; --line:#d9dde3; --bg:#ffffff; --panel:#f6f8fa; --accent:#1f5f8b; }
+  * { box-sizing: border-box; }
+  body { margin:0; padding:0 0 3rem 0; font:14px/1.45 -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; color:var(--ink); background:var(--bg); }
+  main { max-width: 1180px; margin: 0 auto; padding: 0 1.25rem; }
+  .disclaimer { background:#fff4e5; border-left:6px solid #e65100; padding:.9rem 1.1rem; margin:1rem 0; font-weight:600; }
+  .legend { background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:.75rem 1rem; margin:.5rem 0 1rem; font-size:13px; }
+  h1 { font-size:1.6rem; margin:.8rem 0 .2rem; } h2 { font-size:1.15rem; margin:0; } h3 { font-size:1.02rem; margin:1rem 0 .4rem; }
+  details.section { border:1px solid var(--line); border-radius:6px; margin:.7rem 0; background:#fff; }
+  details.section > summary { cursor:pointer; padding:.6rem .9rem; background:var(--panel); border-radius:6px; list-style:none; display:flex; align-items:center; gap:.6rem; }
+  details.section > summary::-webkit-details-marker { display:none; }
+  details.section > summary::before { content:"▸"; color:var(--muted); }
+  details.section[open] > summary::before { content:"▾"; }
+  details.section > .body { padding:.6rem .9rem 1rem; }
+  table { border-collapse:collapse; width:100%; margin:.4rem 0 .8rem; font-size:13px; }
+  th, td { border:1px solid var(--line); padding:.35rem .5rem; text-align:left; vertical-align:top; word-break:break-word; }
+  th { background:var(--panel); }
+  .wrap { overflow-x:auto; }
+  .badge { display:inline-block; padding:.12rem .5rem; border-radius:999px; font-size:11px; font-weight:700; letter-spacing:.02em; color:#fff; white-space:nowrap; }
+  .badge-fact { background:#1b5e20; } .badge-strong { background:#2e7d32; } .badge-possible { background:#f9a825; color:#1b1b1b; }
+  .badge-weak { background:#ef6c00; } .badge-unverified { background:#757575; } .badge-contradictory { background:#c62828; }
+  .claim { display:inline-block; padding:.1rem .45rem; border-radius:4px; font-size:11px; font-weight:700; border:1px solid; white-space:nowrap; }
+  .claim-fact { color:#1b5e20; border-color:#1b5e20; background:#e8f5e9; }
+  .claim-inference { color:#8a4b00; border-color:#8a4b00; background:#fff3e0; }
+  .assoc { font-family: ui-monospace, Menlo, monospace; font-size:12px; color:var(--muted); }
+  .kv { display:grid; grid-template-columns: 220px 1fr; gap:.25rem .8rem; }
+  .kv div:nth-child(odd) { color:var(--muted); }
+  .summary-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap:.6rem; }
+  .card { border:1px solid var(--line); border-radius:6px; padding:.6rem .8rem; background:var(--panel); }
+  .card .k { color:var(--muted); font-size:12px; } .card .v { font-size:1.15rem; font-weight:700; }
+  .entity { border:1px solid var(--line); border-radius:6px; padding:.8rem 1rem; margin:.8rem 0; }
+  .muted { color:var(--muted); } .note { font-style:italic; color:var(--muted); margin:.2rem 0 .6rem; }
+  pre { background:#111; color:#eee; padding:.8rem; border-radius:6px; overflow-x:auto; font-size:12px; }
+  code { font-family: ui-monospace, Menlo, monospace; font-size:12px; }
+  .evidence { font-family: Georgia, serif; font-size:12.5px; color:#333; }
+  svg.evidence-graph { max-width:100%; height:auto; background:#fafbfc; border:1px solid var(--line); border-radius:6px; }
+  svg .node-kind { font-size:9px; fill:#fff; font-weight:700; letter-spacing:.05em; }
+  svg .node-label { font-size:12px; fill:#fff; }
+  svg .edge-label { font-size:9px; fill:#666; }
+  iframe.pyvis { width:100%; height:520px; border:1px solid var(--line); border-radius:6px; }
+  a { color:var(--accent); }
+  .verify { font-size:11px; white-space:nowrap; }
+  ol.sources li { margin:.35rem 0; }
+  @media print {
+    details.section { break-inside:avoid; }
+    details.section > summary::before { content:""; }
+    details:not([open]) > *:not(summary) { display:block; }
+    .disclaimer { border:2px solid #000; }
+    a { color:#000; text-decoration:none; }
+    iframe.pyvis { display:none; }
+  }
+</style>
+</head>
+<body>
+<main>
+
+<div class="disclaimer" role="note">DISCLAIMER: {{ meta.disclaimer }}</div>
+
+<h1>Public-source research report for {{ phone.e164 }}</h1>
+<div class="muted">Investigation <code>{{ meta.investigation_id }}</code> · engine {{ meta.engine_version }} · depth {{ meta.depth.value }} · {{ meta.started_at|dt }} → {{ meta.finished_at|dt }}</div>
+
+<div class="legend">
+  <strong>Legend.</strong> Every claim is labelled
+  <span class="claim claim-fact">{{ FACT_LABEL }}</span> (the subject number is literally displayed by an A/B-quality public source with a DIRECT association, or an entity carries the FACT label with a DIRECT association) or
+  <span class="claim claim-inference">{{ INFERENCE_LABEL }}</span> (everything else: INDIRECT / INFERRED associations, STRONG / POSSIBLE / WEAK matches, unverified or contradictory evidence).
+  Association: <span class="assoc">direct</span> = number shown on the page · <span class="assoc">indirect</span> = number on a page connected to the entity · <span class="assoc">inferred</span> = correlation only.
+  Confidence badges:
+  <span class="badge badge-fact">FACT</span> <span class="badge badge-strong">STRONG_MATCH</span> <span class="badge badge-possible">POSSIBLE_MATCH</span>
+  <span class="badge badge-weak">WEAK_ASSOCIATION</span> <span class="badge badge-unverified">UNVERIFIED</span> <span class="badge badge-contradictory">CONTRADICTORY</span>.
+  Findings: {{ fact_count }} confirmed public facts, {{ inference_count }} analytical inferences.
+</div>
+
+{# ---------------------------------------------------------------- 1 metadata #}
+<details class="section" open id="metadata"><summary><h2>Investigation metadata</h2></summary><div class="body">
+  <div class="kv">
+    <div>Investigation id</div><div><code>{{ meta.investigation_id }}</code></div>
+    <div>Engine version</div><div>{{ meta.engine_version }}</div>
+    <div>Started / finished</div><div>{{ meta.started_at|dt }} / {{ meta.finished_at|dt }}</div>
+    <div>Depth</div><div>{{ meta.depth.value }}</div>
+    <div>Case reference</div><div>{{ meta.case_reference or "-" }}</div>
+    <div>Authorization note</div><div>{{ meta.authorization_note or "-" }}</div>
+  </div>
+  <h3>Providers</h3>
+  <div class="wrap"><table><thead><tr><th>Provider</th><th>Category</th><th>State</th><th>Paid</th><th>Reason</th></tr></thead><tbody>
+  {% for p in meta.providers %}<tr><td>{{ p.name }}</td><td>{{ p.category }}</td><td>{{ p.state.value }}</td><td>{{ p.paid|yesno }}</td><td>{{ p.reason or "-" }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% if meta.stages %}
+  <h3>Stages</h3>
+  <div class="wrap"><table><thead><tr><th>Stage</th><th>Status</th><th>Counts</th><th>Message</th></tr></thead><tbody>
+  {% for s in meta.stages %}<tr><td>{{ s.stage.value }}</td><td>{{ s.status.value }}</td><td>{% for k, v in s.counts.items() %}{{ k }}={{ v }}{% if not loop.last %}, {% endif %}{% endfor %}</td><td>{{ s.message or "-" }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% endif %}
+</div></details>
+
+{# ---------------------------------------------------------------- 2 input #}
+<details class="section" open id="input"><summary><h2>Input number</h2></summary><div class="body">
+  <div class="kv"><div>Raw input</div><div><code>{{ phone.raw }}</code></div><div>Subject (E.164)</div><div><strong>{{ phone.e164 }}</strong></div><div>Masked</div><div><code>{{ phone.masked }}</code></div></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 3 normalisation #}
+<details class="section" open id="normalisation"><summary><h2>Normalisation</h2></summary><div class="body">
+  <div class="kv">
+    <div>E.164</div><div>{{ phone.e164 }}</div><div>National</div><div>{{ phone.national }}</div>
+    <div>International</div><div>{{ phone.international }}</div><div>Subscriber</div><div>{{ phone.subscriber }}</div>
+    <div>Kind</div><div>{{ phone.kind.value }}</div><div>Valid / possible / Indian</div><div>{{ phone.is_valid|yesno }} / {{ phone.is_possible|yesno }} / {{ phone.is_indian|yesno }}</div>
+    <div>MNP note</div><div>{% if phone.notes %}{{ phone.notes|join(" ") }}{% else %}Mobile Number Portability: prefix indicates original allocation only.{% endif %}</div>
+    <div>Warnings</div><div>{{ phone.warnings|join("; ") or "-" }}</div>
+    <div>Search variants</div><div>{% for v in phone.variants %}<code>{{ v }}</code>{% if not loop.last %} · {% endif %}{% endfor %}</div>
+  </div>
+</div></details>
+
+{# ---------------------------------------------------------------- 4 telecom #}
+<details class="section" open id="telecom"><summary><h2>Telecom</h2></summary><div class="body">
+  <p class="note"><span class="claim claim-inference">{{ INFERENCE_LABEL }}</span> numbering-plan data describes original allocation, not the current subscriber.</p>
+  <div class="wrap"><table><thead><tr><th>Provider</th><th>Field</th><th>Value</th><th>Confidence</th><th>Note</th></tr></thead><tbody>
+  {% for t in inv.telecom %}<tr><td>{{ t.provider }}</td><td>{{ t.field }}</td><td>{{ t.value }}</td><td>{{ t.confidence|pct }}</td><td>{{ t.note or "-" }}</td></tr>{% else %}<tr><td colspan="5" class="muted">None</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 5 executive summary #}
+<details class="section" open id="summary"><summary><h2>Executive summary</h2></summary><div class="body">
+  <div class="summary-grid">
+    <div class="card"><div class="k">Candidate Identity</div><div class="v">{{ summary.candidate_identity or "-" }}</div><div class="muted">{{ summary.candidate_kind.value }} · <span class="claim {{ 'claim-fact' if top_claim_label == FACT_LABEL else 'claim-inference' }}">{{ top_claim_label }}</span></div></div>
+    <div class="card"><div class="k">Confidence</div><div class="v">{{ summary.confidence_percent }}% <span class="badge {{ summary.confidence_label|badge }}">{{ summary.confidence_label.value }}</span></div><div class="muted">analytical estimate</div></div>
+    <div class="card"><div class="k">Possible Location</div><div class="v">{{ summary.possible_location or "-" }}</div></div>
+    <div class="card"><div class="k">Public Businesses</div><div class="v">{{ summary.public_businesses }}</div></div>
+    <div class="card"><div class="k">Public Emails</div><div class="v">{{ summary.public_emails }}</div></div>
+    <div class="card"><div class="k">Public Usernames</div><div class="v">{{ summary.public_usernames }}</div></div>
+    <div class="card"><div class="k">Public Profiles</div><div class="v">{{ summary.public_profiles }}</div></div>
+    <div class="card"><div class="k">Public Documents</div><div class="v">{{ summary.public_documents }}</div></div>
+    <div class="card"><div class="k">Associated Public Numbers</div><div class="v">{{ summary.associated_public_numbers }}</div></div>
+    <div class="card"><div class="k">Candidates / Contradictions</div><div class="v">{{ summary.candidate_count }} / {{ summary.contradiction_count }}</div></div>
+    <div class="card"><div class="k">Sources / Queries</div><div class="v">{{ summary.sources_consulted }} / {{ summary.queries_executed }}</div></div>
+  </div>
+  {% if summary.headline %}<p>{{ summary.headline }}</p>{% endif %}
+</div></details>
+
+{# ---------------------------------------------------------------- 6 candidates #}
+<details class="section" open id="candidates"><summary><h2>Candidate identities</h2></summary><div class="body">
+  {% for e in entities %}
+  <div class="entity" id="{{ e.entity_id }}">
+    <h3>{{ e.label or e.entity_id }} <span class="muted">({{ e.kind.value }})</span>
+      <span class="badge {{ e.score.label|badge }}">{{ e.score.label.value }}</span> <strong>{{ e.score.percent }}%</strong>
+      <span class="claim {{ 'claim-fact' if entity_label(e) == FACT_LABEL else 'claim-inference' }}">{{ entity_label(e) }}</span>
+      <span class="assoc">association={{ e.association.value }}</span></h3>
+    <div class="muted">Independent sources: {{ e.independent_source_count }} · first/last seen {{ e.first_seen|dt("day") }} / {{ e.last_seen|dt("day") }} · {{ e.score.note }}</div>
+    <h3>Why linked</h3>
+    <ul>{% for w in e.why_linked %}<li>{{ w }}</li>{% else %}<li class="muted">No reasons recorded.</li>{% endfor %}</ul>
+    <h3>Score ledger</h3>
+    <div class="wrap"><table><thead><tr><th>Rule</th><th>Points</th><th>Reason</th><th>Findings</th></tr></thead><tbody>
+    {% for c in e.score.components %}<tr><td>{{ c.rule }}</td><td>{{ "%+d"|format(c.points) }}</td><td>{{ c.reason }}</td><td>{{ c.finding_ids|join(", ") or "-" }}</td></tr>{% endfor %}
+    <tr><th>Total</th><th>{{ "%+d"|format(e.score.total_points) }}</th><th colspan="2">{{ e.score.percent }}% (analytical estimate)</th></tr>
+    </tbody></table></div>
+    <div class="kv">
+      {% if e.names %}<div>Names</div><div>{{ e.names|join(", ") }}</div>{% endif %}
+      {% if e.emails %}<div>Emails</div><div>{{ e.emails|join(", ") }}</div>{% endif %}
+      {% if e.usernames %}<div>Usernames</div><div>{{ e.usernames|join(", ") }}</div>{% endif %}
+      {% if e.businesses %}<div>Businesses</div><div>{{ e.businesses|join(", ") }}</div>{% endif %}
+      {% if e.websites %}<div>Websites</div><div>{{ e.websites|join(", ") }}</div>{% endif %}
+      {% if e.job_titles %}<div>Job titles</div><div>{{ e.job_titles|join(", ") }}</div>{% endif %}
+      {% if e.locations %}<div>Locations</div><div>{{ e.locations|join(", ") }}</div>{% endif %}
+      {% if e.addresses %}<div>Addresses (see dated table below)</div><div>{{ e.addresses|join("; ") }}</div>{% endif %}
+      {% if e.associated_numbers %}<div>Associated public numbers</div><div>{{ e.associated_numbers|join(", ") }}</div>{% endif %}
+      <div>Sources</div><div>{% for sid in e.source_ids %}<a href="{{ source_url.get(sid, '#') }}">{{ sid }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</div>
+    </div>
+    {% set fl = findings_by_entity.get(e.entity_id, []) %}
+    {% if fl %}
+    <h3>Findings ({{ fl|length }})</h3>
+    <div class="wrap"><table><thead><tr><th>Label</th><th>Field</th><th>Value</th><th>Association</th><th>Number shown</th><th>Quality</th><th>Published</th><th>Evidence</th><th>Verify</th></tr></thead><tbody>
+    {% for f in fl %}
+    <tr>
+      <td><span class="claim {{ 'claim-fact' if finding_label(f) == FACT_LABEL else 'claim-inference' }}">{{ finding_label(f) }}</span></td>
+      <td>{{ f.field.value }}</td><td>{{ f.value }}</td><td class="assoc">{{ f.association.value }}</td>
+      <td>{{ f.number_displayed|yesno }}</td><td>{{ f.source_quality.value }}</td><td>{{ f.published_at|dt(f.date_precision.value) }}</td>
+      <td class="evidence">{{ f.evidence_text }}</td>
+      <td><a class="verify" href="{{ f.source_url }}" rel="noopener noreferrer">Verify ↗</a></td>
+    </tr>
+    {% endfor %}
+    </tbody></table></div>
+    {% endif %}
+  </div>
+  {% else %}
+  <p class="muted">No candidate identity could be resolved from public sources.</p>
+  {% endfor %}
+</div></details>
+
+{# ---------------------------------------------------------------- 7-9 names/emails/usernames #}
+{% for title, values, fieldname in [("Names", inv.names, "name"), ("Emails", inv.emails, "email"), ("Usernames", inv.usernames, "username")] %}
+<details class="section" open id="{{ fieldname }}s"><summary><h2>{{ title }}</h2></summary><div class="body">
+  {% if values %}<ul>{% for v in values %}<li>{{ v }}</li>{% endfor %}</ul>{% else %}<p class="muted">None found.</p>{% endif %}
+  <div class="wrap"><table><thead><tr><th>Label</th><th>Value</th><th>Association</th><th>Quality</th><th>Published</th><th>Evidence</th><th>Verify</th></tr></thead><tbody>
+  {% for f in inv.findings if f.field.value == fieldname %}
+  <tr><td><span class="claim {{ 'claim-fact' if finding_label(f) == FACT_LABEL else 'claim-inference' }}">{{ finding_label(f) }}</span></td><td>{{ f.value }}</td><td class="assoc">{{ f.association.value }}</td><td>{{ f.source_quality.value }}</td><td>{{ f.published_at|dt(f.date_precision.value) }}</td><td class="evidence">{{ f.evidence_text }}</td><td><a class="verify" href="{{ f.source_url }}">Verify ↗</a></td></tr>
+  {% else %}<tr><td colspan="7" class="muted">No findings.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+{% endfor %}
+
+{# ---------------------------------------------------------------- 10 social profiles #}
+<details class="section" open id="profiles"><summary><h2>Social profiles</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Label</th><th>Platform</th><th>Username</th><th>Display name</th><th>Profile URL</th><th>Source URL</th><th>Number displayed?</th><th>Association</th><th>Confidence</th><th>Matching text</th></tr></thead><tbody>
+  {% for p in inv.social_profiles %}
+  <tr><td><span class="claim {{ 'claim-fact' if profile_label(p) == FACT_LABEL else 'claim-inference' }}">{{ profile_label(p) }}</span></td><td>{{ p.platform }}</td><td>{{ p.username }}</td><td>{{ p.display_name }}</td><td><a href="{{ p.profile_url }}">{{ p.profile_url }}</a></td><td><a href="{{ p.source_url }}">{{ p.source_url }}</a></td><td>{{ p.number_displayed|yesno }}</td><td class="assoc">{{ p.association.value }}</td><td>{{ p.confidence|pct }}</td><td class="evidence">{{ p.matching_text }}</td></tr>
+  {% else %}<tr><td colspan="10" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 11 businesses #}
+<details class="section" open id="businesses"><summary><h2>Businesses</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Name</th><th>Owner (if publicly stated)</th><th>Category</th><th>Address</th><th>City</th><th>Website</th><th>Email</th><th>Co-listed numbers</th><th>Sources</th></tr></thead><tbody>
+  {% for b in inv.businesses %}
+  <tr><td>{{ b.name }}</td><td>{{ b.owner or "-" }}</td><td>{{ b.category or "-" }}</td><td>{{ b.address or "-" }}</td><td>{{ b.city or "-" }}</td><td>{% if b.website %}<a href="{{ b.website }}">{{ b.website }}</a>{% else %}-{% endif %}</td><td>{{ b.email or "-" }}</td><td>{{ b.other_numbers|join(", ") or "-" }}</td><td>{% for sid in b.source_ids %}<a href="{{ source_url.get(sid, '#') }}">{{ sid }}</a>{% if not loop.last %}, {% endif %}{% endfor %}</td></tr>
+  {% else %}<tr><td colspan="9" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% if inv.listings %}
+  <h3>Classified / marketplace listings</h3>
+  <div class="wrap"><table><thead><tr><th>Title</th><th>Seller name</th><th>Category</th><th>Location</th><th>Published</th><th>URL</th></tr></thead><tbody>
+  {% for l in inv.listings %}<tr><td>{{ l.title }}</td><td>{{ l.seller_name or "-" }}</td><td>{{ l.category or "-" }}</td><td>{{ l.location or "-" }}</td><td>{{ l.published_at|dt("day") }}</td><td><a href="{{ l.url }}">{{ l.url }}</a></td></tr>{% endfor %}
+  </tbody></table></div>
+  {% endif %}
+</div></details>
+
+{# ---------------------------------------------------------------- 12 addresses & locations #}
+<details class="section" open id="addresses"><summary><h2>Addresses &amp; Locations</h2></summary><div class="body">
+  <p class="note">{{ ADDRESS_NOTE }}</p>
+  <div class="wrap"><table><thead><tr><th>Address</th><th>City</th><th>State</th><th>PIN</th><th>Classification</th><th>Why</th><th>Source date</th><th>Source</th><th>Entity</th></tr></thead><tbody>
+  {% for a in inv.addresses %}
+  <tr><td>{{ a.raw }}</td><td>{{ a.city or "-" }}</td><td>{{ a.state or "-" }}</td><td>{{ a.pincode or "-" }}</td><td>{{ a.classification.value }}</td><td>{{ a.classification_reason or "-" }}</td><td>{{ a.published_at|dt(a.date_precision.value) }}</td><td><a href="{{ source_url.get(a.source_id, '#') }}">{{ a.source_id }}</a></td><td>{{ a.entity_id or "-" }}</td></tr>
+  {% else %}<tr><td colspan="9" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+  <h3>Locations (city / state level)</h3>
+  <div class="wrap"><table><thead><tr><th>Location</th><th>City</th><th>State</th><th>Country</th><th>Sources</th><th>Entity</th></tr></thead><tbody>
+  {% for l in inv.locations %}<tr><td>{{ l.label or (l.city ~ ", " ~ l.state) }}</td><td>{{ l.city }}</td><td>{{ l.state }}</td><td>{{ l.country }}</td><td>{{ l.source_count }}</td><td>{{ l.entity_id or "-" }}</td></tr>{% else %}<tr><td colspan="6" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 13 alternate numbers #}
+<details class="section" open id="alternate-numbers"><summary><h2>Public alternate numbers</h2></summary><div class="body">
+  <p class="note">{{ ALT_NUMBER_NOTE }}</p>
+  <div class="wrap"><table><thead><tr><th>Masked</th><th>E.164</th><th>Relation</th><th>Reason</th><th>Source URL</th><th>Confidence</th><th>Discovered</th><th>Published</th><th>Entity</th></tr></thead><tbody>
+  {% for n in inv.associated_numbers %}
+  <tr><td><code>{{ n.masked }}</code></td><td>{{ n.e164 }}</td><td>{{ n.relation }}</td><td>{{ n.reason }}</td><td><a href="{{ n.source_url or source_url.get(n.source_id, '#') }}">{{ n.source_url or n.source_id }}</a></td><td>{{ n.confidence|pct }}</td><td>{{ n.discovered_at|dt("day") }}</td><td>{{ n.published_at|dt("day") }}</td><td>{{ n.entity_id or "-" }}</td></tr>
+  {% else %}<tr><td colspan="9" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 14 documents #}
+<details class="section" open id="documents"><summary><h2>Documents</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Title</th><th>Type</th><th>Organisation</th><th>Author</th><th>Published</th><th>Phones</th><th>Emails</th><th>Names</th><th>Fetched</th><th>URL</th></tr></thead><tbody>
+  {% for d in inv.documents %}
+  <tr><td>{{ d.title or "-" }}</td><td>{{ d.doc_type or "-" }}</td><td>{{ d.organization or "-" }}</td><td>{{ d.author or "-" }}</td><td>{{ d.published_at|dt(d.date_precision.value) }}</td><td>{{ d.phones|join(", ") or "-" }}</td><td>{{ d.emails|join(", ") or "-" }}</td><td>{{ d.names|join(", ") or "-" }}</td><td>{{ d.fetched|yesno }}</td><td><a href="{{ d.url }}">{{ d.url }}</a></td></tr>
+  {% else %}<tr><td colspan="10" class="muted">None found.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 15 timeline #}
+<details class="section" open id="timeline"><summary><h2>Timeline</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Date</th><th>Precision</th><th>Description</th><th>Kind</th><th>Source</th></tr></thead><tbody>
+  {% for t in timeline %}<tr><td>{{ t.date|dt(t.precision.value) }}</td><td>{{ t.precision.value }}</td><td>{{ t.description }}</td><td>{{ t.kind }}</td><td><a href="{{ t.source_url or source_url.get(t.source_id, '#') }}">{{ t.source_url or t.source_id }}</a></td></tr>{% else %}<tr><td colspan="5" class="muted">No dated events.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 16 graph #}
+<details class="section" open id="graph"><summary><h2>Evidence graph</h2></summary><div class="body">
+  <p class="note">Solid edges = direct, dashed = indirect, dotted = inferred. Percentages on entity nodes are analytical estimates.</p>
+  {% if graph_svg %}
+  <div class="wrap">{{ graph_svg }}</div>
+  {% else %}
+  <p class="muted">Graph too large for an inline drawing; edge table shown instead.</p>
+  <div class="wrap"><table><thead><tr><th>From</th><th>Relation</th><th>To</th><th>Association</th><th>Confidence</th></tr></thead><tbody>
+  {% for e in graph_edges %}<tr><td>{{ e.source }}</td><td>{{ e.relation }}</td><td>{{ e.target }}</td><td class="assoc">{{ e.association }}</td><td>{{ e.confidence|pct }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  {% endif %}
+  {% if pyvis_html %}
+  <h3>Interactive view</h3>
+  <iframe class="pyvis" sandbox="allow-scripts" srcdoc="{{ pyvis_html }}" title="Interactive evidence graph"></iframe>
+  {% endif %}
+  <h3>Text view</h3>
+  <pre>{{ graph_ascii }}</pre>
+</div></details>
+
+{# ---------------------------------------------------------------- 17 contradictions #}
+<details class="section" open id="contradictions"><summary><h2>Contradictions</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Kind</th><th>Severity</th><th>Description</th><th>Entities</th><th>Findings</th><th>Resolution hint</th></tr></thead><tbody>
+  {% for c in inv.contradictions %}<tr><td>{{ c.kind.value }}</td><td>{{ c.severity }}</td><td>{{ c.description }}</td><td>{{ c.entity_ids|join(", ") or "-" }}</td><td>{{ c.finding_ids|join(", ") or "-" }}</td><td>{{ c.resolution_hint or "-" }}</td></tr>{% else %}<tr><td colspan="6" class="muted">None detected.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 18 confidence #}
+<details class="section" open id="confidence"><summary><h2>Confidence scores</h2></summary><div class="body">
+  <p class="note">{{ ESTIMATE_NOTE }} {{ confidence.note }}</p>
+  <div class="wrap"><table><thead><tr><th>Rule</th><th>Points</th></tr></thead><tbody>
+  {% for k, v in confidence.rules.items() %}<tr><td>{{ k }}</td><td>{{ "%+d"|format(v) }}</td></tr>{% endfor %}
+  </tbody></table></div>
+  <h3>Per entity</h3>
+  <div class="wrap"><table><thead><tr><th>Entity</th><th>Percent</th><th>Label</th><th>Claim label</th></tr></thead><tbody>
+  {% for eid, v in confidence.per_entity.items() %}{% set ent = inv.entity_by_id(eid) %}
+  <tr><td>{% if ent %}{{ ent.label }}{% endif %} <code>{{ eid }}</code></td><td>{{ v }}%</td><td>{% if ent %}<span class="badge {{ ent.score.label|badge }}">{{ ent.score.label.value }}</span>{% endif %}</td><td>{% if ent %}<span class="claim {{ 'claim-fact' if entity_label(ent) == FACT_LABEL else 'claim-inference' }}">{{ entity_label(ent) }}</span>{% endif %}</td></tr>
+  {% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 19 source quality #}
+<details class="section" open id="source-quality"><summary><h2>Source quality</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Grade</th><th>Meaning</th><th>Sources</th></tr></thead><tbody>
+  {% for g, meaning in QUALITY_LEGEND.items() %}<tr><td><strong>{{ g }}</strong></td><td>{{ meaning }}</td><td>{{ quality_counts.get(g, 0) }}</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 20 sources #}
+<details class="section" open id="sources"><summary><h2>Full source list ({{ inv.sources|length }})</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>#</th><th>Title</th><th>URL</th><th>Type</th><th>Quality</th><th>Provider</th><th>Retrieved</th><th>Published</th><th>Referenced by</th><th>Fetched</th></tr></thead><tbody>
+  {% for s in inv.sources %}
+  <tr><td>{{ loop.index }}</td><td>{{ s.title or "(untitled)" }}</td><td><a href="{{ s.url }}">{{ s.url }}</a></td><td>{{ s.source_type.value }}</td><td>{{ s.quality.value }}</td><td>{{ s.provider or "-" }}</td><td>{{ s.retrieved_at|dt }}</td><td>{{ s.published_at|dt(s.date_precision.value) }}</td><td>{{ s.referenced_by|length }}</td><td>{% if s.fetched %}yes{% else %}no (provider snippet){% endif %}</td></tr>
+  {% else %}<tr><td colspan="10" class="muted">None.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 21 queries #}
+<details class="section" open id="queries"><summary><h2>Search queries used ({{ inv.queries|length }})</h2></summary><div class="body">
+  <div class="wrap"><table><thead><tr><th>Provider</th><th>Query</th><th>Stage</th><th>Purpose</th><th>Results</th><th>New</th><th>Information gain</th><th>Cached</th><th>Error</th></tr></thead><tbody>
+  {% for q in inv.queries %}<tr><td>{{ q.provider }}</td><td><code>{{ q.query }}</code></td><td>{{ q.stage.value }}</td><td>{{ q.purpose or "-" }}</td><td>{{ q.results_count }}</td><td>{{ q.new_results_count }}</td><td>{{ "%.2f"|format(q.information_gain) }}</td><td>{{ q.cached|yesno }}</td><td>{{ q.error or "-" }}</td></tr>{% else %}<tr><td colspan="9" class="muted">None.</td></tr>{% endfor %}
+  </tbody></table></div>
+</div></details>
+
+{# ---------------------------------------------------------------- 22 limitations #}
+<details class="section" open id="limitations"><summary><h2>Limitations</h2></summary><div class="body">
+  <ul>{% for l in inv.limitations %}<li>{{ l }}</li>{% else %}<li class="muted">None recorded.</li>{% endfor %}</ul>
+</div></details>
+
+{# ---------------------------------------------------------------- 23 timestamp #}
+<details class="section" open id="timestamp"><summary><h2>Timestamp</h2></summary><div class="body">
+  <p>Report generated {{ generated_at|dt }} by engine {{ meta.engine_version }} for investigation <code>{{ meta.investigation_id }}</code> (finished {{ meta.finished_at|dt }}).</p>
+  <div class="disclaimer">{{ meta.disclaimer }}</div>
+</div></details>
+
+</main>
+</body>
+</html>
